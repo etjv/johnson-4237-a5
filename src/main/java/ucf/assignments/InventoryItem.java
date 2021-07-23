@@ -7,6 +7,14 @@ public class InventoryItem {
     String serialNumber;
     String name;
 
+
+    public InventoryItem(BigDecimal v, String s, String n){
+        this.setValue(v);
+        this.setSerialNumber(s);
+        this.setName(n);
+    }
+
+
     public BigDecimal getValue() {
         return value;
     }

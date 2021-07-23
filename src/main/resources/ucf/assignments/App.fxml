@@ -14,11 +14,11 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.AppController">
    <center>
-      <TableView prefHeight="310.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="myTable" editable="true" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn fx:id="itemValueColumn" prefWidth="124.0" text="Value" />
-          <TableColumn fx:id="itemSerialNumberColumn" prefWidth="142.0" text="Serial Number" />
-            <TableColumn fx:id="itemNameColumn" prefWidth="333.0" text="Name" />
+          <TableColumn fx:id="itemValueColumn" onEditCommit="#changeItemValue" prefWidth="124.0" text="Value" />
+          <TableColumn fx:id="itemSerialNumberColumn" onEditCommit="#changeItemSerialNumber" prefWidth="142.0" text="Serial Number" />
+            <TableColumn fx:id="itemNameColumn" onEditCommit="#changeItemName" prefWidth="333.0" text="Name" />
         </columns>
       </TableView>
    </center>
