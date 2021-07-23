@@ -1,0 +1,46 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+class App {
+    main()
+    start()
+}
+
+class AppController{
+    + addInventoryItemButtonClicked()
+    + removeInventoryItemButtonClicked()
+    + saveInventoryListButtonClicked()
+    + openInventoryListButtonClicked()
+
+
+    + addInventoryItem()
+    + deleteInventoryItem()
+    + saveInventoryList()
+    + openInventoryList()
+    + createTSVFile()
+    + createHTMLFile()
+}
+
+class InventoryList{
+    - ObservableSet<InventoryItem> InventoryList;
+}
+
+class InventoryItem{
+    - BigDecimal value;
+    - String serialNumber;
+    - String name;
+
+    + getValue()
+    + setValue()
+    + getSerialNumber()
+    + setSerialNumber()
+    + getName()
+    + setName()
+}
+
+javafx.Application <|-- App
+App -- AppController
+InventoryList --> InventoryItem
+AppController --> InventoryList
+
+@enduml
