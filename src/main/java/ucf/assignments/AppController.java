@@ -1,38 +1,61 @@
 package ucf.assignments;
 
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.math.BigDecimal;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class AppController {
+public class AppController implements Initializable {
 
-    public TableColumn itemValueColumn;
-    public TableColumn itemSerialNumberColumn;
-    public TableColumn itemNameColumn;
+    public TableColumn<InventoryItem, String> itemValueColumn;
+    public TableColumn<InventoryItem, String> itemSerialNumberColumn;
+    public TableColumn<InventoryItem, String> itemNameColumn;
     public TextField itemValueTextField;
     public TextField itemSerialNumberTextField;
     public TextField itemNameTextField;
     public TextField searchTextField;
     public InventoryList myList = new InventoryList();
-    public TableView myTable;
+    public TableView<InventoryItem> myTable;
 
 
-    /*@Override
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-        itemValueColumn.setCellValueFactory(new PropertyValueFactory<InventoryItem, String>("value"));
-        itemSerialNumberColumn.setCellValueFactory(new PropertyValueFactory<InventoryItem, String>("serialNumber"));
-        itemNameColumn.setCellValueFactory(new PropertyValueFactory<InventoryItem, String>("name"));
-        myTable.setEditable(true);
-        itemValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        itemSerialNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        itemNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        FilteredList<InventoryItem> filteredList = new FilteredList<>(myList.InventoryList, b -> true);
+        searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredList.setPredicate(InventoryItem -> {
+                if (newValue == null || newValue.isEmpty()){
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if(String.valueOf(InventoryItem.getValue()).contains(lowerCaseFilter)){
+                    return true;
+                }
+                else if(InventoryItem.getSerialNumber().toLowerCase().contains(lowerCaseFilter)){
+                    return true;
+                }
+                else if(InventoryItem.getName().toLowerCase().contains(lowerCaseFilter)){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            });
+        });
+
+        SortedList<InventoryItem> sortedList = new SortedList<>(filteredList);
+        sortedList.comparatorProperty().bind(myTable.comparatorProperty());
+        myTable.setItems(sortedList);
     }
-     */
+
 
     @FXML
     public void addInventoryItemButtonClicked(ActionEvent actionEvent) {
@@ -51,25 +74,24 @@ public class AppController {
 
     @FXML
     public void deleteSelectedInventoryItemButtonClicked(ActionEvent actionEvent) {
-        deleteInventoryItem();
+        deleteInventoryItem(myTable.getSelectionModel().getSelectedIndex());
     }
 
     @FXML
     public void changeItemValue(TableColumn.CellEditEvent cellEditEvent) {
-        InventoryItem selected = (InventoryItem) myTable.getSelectionModel().getSelectedItem();
+        InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
         selected.setValue(BigDecimal.valueOf((double)cellEditEvent.getNewValue()));
-
     }
 
     @FXML
     public void changeItemSerialNumber(TableColumn.CellEditEvent cellEditEvent) {
-        InventoryItem selected = (InventoryItem) myTable.getSelectionModel().getSelectedItem();
+        InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
         selected.setSerialNumber(cellEditEvent.getNewValue().toString());
     }
 
     @FXML
     public void changeItemName(TableColumn.CellEditEvent cellEditEvent) {
-        InventoryItem selected = (InventoryItem) myTable.getSelectionModel().getSelectedItem();
+        InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
         selected.setName(cellEditEvent.getNewValue().toString());
 
     }
@@ -127,7 +149,7 @@ public class AppController {
         }
         // check to see if it matches any other serial number
         for(int i = 0; i < myList.InventoryList.size(); i++){
-            if(myList.InventoryList.get(i).serialNumber.equals(name)){
+            if(myList.InventoryList.get(i).getSerialNumber().equals(name)){
                 return false;
             }
         }
@@ -161,8 +183,8 @@ public class AppController {
         // add them to InventoryList/TableView
     }
 
-    public void deleteInventoryItem(){
-        // get selected item
-        // remove it from the InventoryList/TableView
+    public void deleteInventoryItem(int i){
+        // remove item of index i from the InventoryList/TableView
+        myList.InventoryList.remove(i);
     }
 }

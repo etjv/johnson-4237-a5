@@ -3,9 +3,9 @@ package ucf.assignments;
 import java.math.BigDecimal;
 
 public class InventoryItem {
-    BigDecimal value;
-    String serialNumber;
-    String name;
+    private BigDecimal value;
+    private String serialNumber;
+    private String name;
 
 
     public InventoryItem(BigDecimal v, String s, String n){
