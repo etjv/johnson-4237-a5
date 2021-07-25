@@ -1,33 +1,45 @@
 package ucf.assignments;
 
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.Objects;
 
-public class AppController implements Initializable {
+public class AppController{
 
+    @FXML
     public TableColumn<InventoryItem, String> itemValueColumn;
+    @FXML
     public TableColumn<InventoryItem, String> itemSerialNumberColumn;
+    @FXML
     public TableColumn<InventoryItem, String> itemNameColumn;
+    @FXML
     public TextField itemValueTextField;
+    @FXML
     public TextField itemSerialNumberTextField;
+    @FXML
     public TextField itemNameTextField;
+    @FXML
     public TextField searchTextField;
-    public InventoryList myList = new InventoryList();
+    @FXML
     public TableView<InventoryItem> myTable;
 
+    public InventoryList myList = new InventoryList();
 
-    @Override
+
+    /*@Override
     public void initialize(URL location, ResourceBundle resources) {
         FilteredList<InventoryItem> filteredList = new FilteredList<>(myList.InventoryList, b -> true);
         searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -55,6 +67,8 @@ public class AppController implements Initializable {
         sortedList.comparatorProperty().bind(myTable.comparatorProperty());
         myTable.setItems(sortedList);
     }
+
+     */
 
 
     @FXML
@@ -96,11 +110,16 @@ public class AppController implements Initializable {
 
     }
 
+    @FXML
+    public void searchButtonClicked(ActionEvent actionEvent) {
+        myTable.setItems(searchInventoryItems(searchTextField.getText()));
+    }
+
     public void addInventoryItem() {
         // create a new Item for the InventoryItems
         // get the current text from the text boxes and scan them to temp variables
         if(!isValueANumber(itemValueTextField.getText())){
-            // error box
+            errorPopUp();
         }
         else{
             BigDecimal tempValue = new BigDecimal(itemValueTextField.getText());
@@ -109,7 +128,7 @@ public class AppController implements Initializable {
             // determine if name is a valid length
             // determine if the serial number is a collection of 10 digits/numbers
             if(!isNameValid(tempName) || !isSerialNumberValid(tempSerialNumber)){
-                // error box
+                errorPopUp();
             }
             // if so, add the information to the InventoryList/TableView
             else {
@@ -127,6 +146,9 @@ public class AppController implements Initializable {
     }
 
     public boolean isValueANumber(String name) {
+        if(name == null || name.isEmpty()){
+            return false;
+        }
         // check to see that string contains only digits
         for(int i = 0; i < name.length(); i++){
             if((!Character.isDigit(name.charAt(i))) && (name.charAt(i) != '.')){
@@ -137,6 +159,9 @@ public class AppController implements Initializable {
     }
 
     public boolean isSerialNumberValid(String name) {
+        if(name == null || name.isEmpty()){
+            return false;
+        }
         // check to see if the serial number is the valid length of 10
         if(name.length() != 10){
             return false;
@@ -157,6 +182,9 @@ public class AppController implements Initializable {
     }
 
     public boolean isNameValid(String name) {
+        if(name == null || name.isEmpty()){
+            return false;
+        }
         // check to see that the name is a valid length
         return (name.length() >= 2) && (name.length() <= 256);
     }
@@ -187,4 +215,32 @@ public class AppController implements Initializable {
         // remove item of index i from the InventoryList/TableView
         myList.InventoryList.remove(i);
     }
+
+    public ObservableList<InventoryItem> searchInventoryItems(String text) {
+        if(text == null || text.isEmpty()){
+            return myList.InventoryList;
+        }
+        ObservableList<InventoryItem> searchedList = FXCollections.observableArrayList();
+        for(int i = 0; i < myList.InventoryList.size(); i++){
+            if(myList.InventoryList.get(i).getValue().toString().contains(text) || myList.InventoryList.get(i).getSerialNumber().contains(text) || myList.InventoryList.get(i).getName().contains(text)){
+                searchedList.add(myList.InventoryList.get(i));
+            }
+        }
+        return searchedList;
+    }
+
+    public void errorPopUp() {
+        try {
+            Stage error = new Stage();
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ErrorMessage.fxml")));
+            Scene scene = new Scene(root);
+
+            error.setScene(scene);
+            error.setTitle("App");
+            error.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

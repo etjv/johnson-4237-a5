@@ -56,7 +56,12 @@
                      <MenuItem mnemonicParsing="false" onAction="#deleteSelectedInventoryItemButtonClicked" text="Delete Selected Item" />
                  </Menu>
              </MenuBar>
-            <TextField fx:id="searchTextField" promptText="Search..." />
+            <HBox>
+               <children>
+                  <TextField fx:id="searchTextField" prefHeight="25.0" prefWidth="548.0" promptText="Search..." />
+                  <Button mnemonicParsing="false" onAction="#searchButtonClicked" text="Search" />
+               </children>
+            </HBox>
          </children>
       </VBox>
    </top>
