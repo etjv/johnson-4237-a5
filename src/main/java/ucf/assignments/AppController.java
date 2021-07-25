@@ -1,3 +1,7 @@
+/*
+ *  UCF COP3330 Summer 2021 Assignment 5 Solution
+ *  Copyright 2021 Edmund Johnson V
+ */
 package ucf.assignments;
 
 import javafx.collections.FXCollections;
@@ -14,7 +18,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class AppController{
@@ -94,7 +97,7 @@ public class AppController{
     @FXML
     public void changeItemValue(TableColumn.CellEditEvent cellEditEvent) {
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
-        selected.setValue(BigDecimal.valueOf((double)cellEditEvent.getNewValue()));
+        selected.setValue((double)cellEditEvent.getNewValue());
     }
 
     @FXML
@@ -122,7 +125,7 @@ public class AppController{
             errorPopUp();
         }
         else{
-            BigDecimal tempValue = new BigDecimal(itemValueTextField.getText());
+            double tempValue = Double.parseDouble(itemValueTextField.getText());
             String tempSerialNumber = itemSerialNumberTextField.getText().toUpperCase();
             String tempName = itemNameTextField.getText();
             // determine if name is a valid length
@@ -222,8 +225,8 @@ public class AppController{
         }
         ObservableList<InventoryItem> searchedList = FXCollections.observableArrayList();
         for(int i = 0; i < myList.InventoryList.size(); i++){
-            if(myList.InventoryList.get(i).getValue().toString().contains(text) || myList.InventoryList.get(i).getSerialNumber().contains(text) || myList.InventoryList.get(i).getName().contains(text)){
-                searchedList.add(myList.InventoryList.get(i));
+            if(String.valueOf(myList.InventoryList.get(i).getValue()).contains(text) || myList.InventoryList.get(i).getSerialNumber().contains(text) || myList.InventoryList.get(i).getName().contains(text)){
+                searchedList.add(new InventoryItem(myList.InventoryList.get(i).getValue(), myList.InventoryList.get(i).getSerialNumber(), myList.InventoryList.get(i).getName()));
             }
         }
         return searchedList;

@@ -1,25 +1,27 @@
+/*
+ *  UCF COP3330 Summer 2021 Assignment 5 Solution
+ *  Copyright 2021 Edmund Johnson V
+ */
+
 package ucf.assignments;
 
-import java.math.BigDecimal;
-
 public class InventoryItem {
-    private BigDecimal value;
+    private double value;
     private String serialNumber;
     private String name;
 
 
-    public InventoryItem(BigDecimal v, String s, String n){
+    public InventoryItem(double v, String s, String n){
         this.setValue(v);
         this.setSerialNumber(s);
         this.setName(n);
     }
 
-
-    public BigDecimal getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(BigDecimal s) {
+    public void setValue(double s) {
         value = s;
     }
 
