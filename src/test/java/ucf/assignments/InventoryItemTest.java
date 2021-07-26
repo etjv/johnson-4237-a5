@@ -2,15 +2,17 @@ package ucf.assignments;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class InventoryItemTest {
 
     @Test
     void getValue() {
         // create a new InventoryItem with a specific value, serial number, and name
+        InventoryItem expected = new InventoryItem("600", "AAAAAAAAAA", "Name");
         // expected = "the value"
+        String actual = "600";
         // assert equals
+
+
     }
 
     @Test

@@ -9,18 +9,38 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
-public class AppController{
+public class AppController implements Initializable {
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        if(itemValueColumn != null){
+            itemValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        }
+        if(itemSerialNumberColumn != null){
+            itemSerialNumberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        }
+        if(itemNameColumn != null){
+            itemNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        }
+    }
 
     @FXML
     public TableColumn<InventoryItem, String> itemValueColumn;
@@ -42,37 +62,6 @@ public class AppController{
     public InventoryList myList = new InventoryList();
 
 
-    /*@Override
-    public void initialize(URL location, ResourceBundle resources) {
-        FilteredList<InventoryItem> filteredList = new FilteredList<>(myList.InventoryList, b -> true);
-        searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredList.setPredicate(InventoryItem -> {
-                if (newValue == null || newValue.isEmpty()){
-                    return true;
-                }
-                String lowerCaseFilter = newValue.toLowerCase();
-                if(String.valueOf(InventoryItem.getValue()).contains(lowerCaseFilter)){
-                    return true;
-                }
-                else if(InventoryItem.getSerialNumber().toLowerCase().contains(lowerCaseFilter)){
-                    return true;
-                }
-                else if(InventoryItem.getName().toLowerCase().contains(lowerCaseFilter)){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            });
-        });
-
-        SortedList<InventoryItem> sortedList = new SortedList<>(filteredList);
-        sortedList.comparatorProperty().bind(myTable.comparatorProperty());
-        myTable.setItems(sortedList);
-    }
-
-     */
-
 
     @FXML
     public void addInventoryItemButtonClicked(ActionEvent actionEvent) {
@@ -81,7 +70,53 @@ public class AppController{
 
     @FXML
     public void saveAsButtonClicked(ActionEvent actionEvent) {
-        saveInventoryList();
+        FileChooser saveFileChooser = new FileChooser();
+        saveFileChooser.setTitle("Save File");
+        try {
+            Stage chooser = new Stage();
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FileChooser.fxml")));
+            Scene scene = new Scene(root);
+
+            File file = saveFileChooser.showSaveDialog(chooser);
+
+            PrintWriter output = new PrintWriter(file);
+
+            if(file.getName().endsWith(".txt")){
+                output.print("Value");
+                for(int i = 0; i < myList.InventoryList.get(biggestValueFinder()).getValue().length()/4; i++){
+                    output.print("\t");
+                }
+                output.println("Serial Number\tName");
+                for(int i = 0; i < myList.InventoryList.size(); i++){
+                    output.println(myList.InventoryList.get(i).getValue() + "\t" + myList.InventoryList.get(i).getSerialNumber() + "\t\t" + myList.InventoryList.get(i).getName());
+                }
+                output.close();
+            }
+
+            else if(file.getName().endsWith(".html")){
+                output.print("<!DOCTYPE html>\n<html>\n<body><style>\nth {\n" +
+                        "  text-align: left;\n" +
+                        "}\n" +
+                        "</style>\n" +
+                        "<table style=\"width:100%\">\n" +
+                        "  <tr>\n" +
+                        "    <th>Value</th>\n" +
+                        "    <th>Serial Number</th>\n" +
+                        "    <th>Name</th>\n" +
+                        "  </tr>\n" +
+                        "  <tr>");
+                for(int i = 0; i < myList.InventoryList.size(); i++){
+                    output.println("<tr>\n" +
+                            "    <td>" + myList.InventoryList.get(i).getValue() +  "</td>\n" +
+                            "    <td>" + myList.InventoryList.get(i).getSerialNumber() +  "</td>\n" +
+                            "    <td>" + myList.InventoryList.get(i).getName() +  "</td>\n" +
+                            "  </tr>\n</table>\n</body>\n</html>");
+                }
+                output.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -97,20 +132,40 @@ public class AppController{
     @FXML
     public void changeItemValue(TableColumn.CellEditEvent cellEditEvent) {
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
-        selected.setValue((double)cellEditEvent.getNewValue());
+        if(!isValueANumber(cellEditEvent.getNewValue().toString())){
+            errorPopUp();
+        }
+        else{
+            int i = myTable.getSelectionModel().getSelectedIndex();
+            myList.InventoryList.get(i).setValue(cellEditEvent.getNewValue().toString());
+            myTable.setItems(myList.InventoryList);
+        }
     }
 
     @FXML
     public void changeItemSerialNumber(TableColumn.CellEditEvent cellEditEvent) {
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
-        selected.setSerialNumber(cellEditEvent.getNewValue().toString());
+        if(!isSerialNumberValid(cellEditEvent.getNewValue().toString().toUpperCase())){
+            errorPopUp();
+        }
+        else{
+            int i = myTable.getSelectionModel().getSelectedIndex();
+            myList.InventoryList.get(i).setSerialNumber(cellEditEvent.getNewValue().toString().toUpperCase());
+            myTable.setItems(myList.InventoryList);
+        }
     }
 
     @FXML
     public void changeItemName(TableColumn.CellEditEvent cellEditEvent) {
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
-        selected.setName(cellEditEvent.getNewValue().toString());
-
+        if(!isNameValid(cellEditEvent.getNewValue().toString())){
+            errorPopUp();
+        }
+        else{
+            int i = myTable.getSelectionModel().getSelectedIndex();
+            myList.InventoryList.get(i).setName(cellEditEvent.getNewValue().toString());
+            myTable.setItems(myList.InventoryList);
+        }
     }
 
     @FXML
@@ -125,9 +180,16 @@ public class AppController{
             errorPopUp();
         }
         else{
-            double tempValue = Double.parseDouble(itemValueTextField.getText());
+            String tempValue = itemValueTextField.getText();
+            if(!tempValue.contains(".")){
+                tempValue = tempValue.concat(".00");
+            }
+            if(!tempValue.contains("$")){
+                tempValue = "$" + tempValue;
+            }
             String tempSerialNumber = itemSerialNumberTextField.getText().toUpperCase();
             String tempName = itemNameTextField.getText();
+
             // determine if name is a valid length
             // determine if the serial number is a collection of 10 digits/numbers
             if(!isNameValid(tempName) || !isSerialNumberValid(tempSerialNumber)){
@@ -149,6 +211,8 @@ public class AppController{
     }
 
     public boolean isValueANumber(String name) {
+        int j = 0;
+        // null/empty case
         if(name == null || name.isEmpty()){
             return false;
         }
@@ -157,11 +221,21 @@ public class AppController{
             if((!Character.isDigit(name.charAt(i))) && (name.charAt(i) != '.')){
                 return false;
             }
+            if(name.charAt(i) == '.'){
+                if(j == 1){
+                    return false;
+                }
+
+                else{
+                    j = 1;
+                }
+            }
         }
         return true;
     }
 
     public boolean isSerialNumberValid(String name) {
+        // null/empty case
         if(name == null || name.isEmpty()){
             return false;
         }
@@ -185,6 +259,7 @@ public class AppController{
     }
 
     public boolean isNameValid(String name) {
+        // null/empty case
         if(name == null || name.isEmpty()){
             return false;
         }
@@ -246,4 +321,13 @@ public class AppController{
         }
     }
 
+    public int biggestValueFinder(){
+        int largest = 0;
+        for(int i = 0; i < myList.InventoryList.size(); i++){
+            if(myList.InventoryList.get(i).getValue().length() > myList.InventoryList.get(largest).getValue().length()){
+                largest = i;
+            }
+        }
+        return largest;
+    }
 }

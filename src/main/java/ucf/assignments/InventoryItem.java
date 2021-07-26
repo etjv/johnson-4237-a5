@@ -6,22 +6,22 @@
 package ucf.assignments;
 
 public class InventoryItem {
-    private double value;
+    private String value;
     private String serialNumber;
     private String name;
 
 
-    public InventoryItem(double v, String s, String n){
+    public InventoryItem(String v, String s, String n){
         this.setValue(v);
         this.setSerialNumber(s);
         this.setName(n);
     }
 
-    public double getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(double s) {
+    public void setValue(String s) {
         value = s;
     }
 
