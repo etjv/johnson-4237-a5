@@ -2,54 +2,75 @@ package ucf.assignments;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 class InventoryItemTest {
 
     @Test
     void getValue() {
-        // create a new InventoryItem with a specific value, serial number, and name
-        InventoryItem expected = new InventoryItem("600", "AAAAAAAAAA", "Name");
-        // expected = "the value"
-        String actual = "600";
+        // create an expected string
+        String expected = "600";
+        // create actual inventory item
+        InventoryItem actual = new InventoryItem("600", "XXXXXXXXXX", "name");
         // assert equals
-
-
+        assertEquals(expected, actual.getValue());
     }
 
     @Test
     void setValue() {
-        // expected = "the value"
-        // create new InventoryItem with no value, serial number, or name
-        // use setValue to set the value to what is expected
+        // create an expected string
+        String expected = "600";
+        // create an actual inventory item with blank variables
+        InventoryItem actual = new InventoryItem("", "", "");
+        // call setValue
+        actual.setValue("600");
         // assert equals
+        assertEquals(expected, actual.getValue());
     }
 
     @Test
     void getSerialNumber() {
-        // create a new InventoryItem with a specific value, serial number, and name
-        // expected = "the serial number"
+        // create an expected string
+        String expected = "XXXXXXXXXX";
+        // create actual inventory item
+        InventoryItem actual = new InventoryItem("600", "XXXXXXXXXX", "name");
         // assert equals
+        assertEquals(expected, actual.getSerialNumber());
     }
 
     @Test
-    void testSetSerialNumber() {
-        // expected = "the serial number"
-        // create new InventoryItem with no value, serial number, or name
-        // use setSerialNumber to set the serial number to what is expected
+    void setSerialNumber() {
+        // create an expected string
+        String expected = "XXXXXXXXXX";
+        // create an actual inventory item with blank variables
+        InventoryItem actual = new InventoryItem("", "", "");
+        // call setValue
+        actual.setSerialNumber("XXXXXXXXXX");
         // assert equals
+        assertEquals(expected, actual.getSerialNumber());
     }
 
     @Test
     void getName() {
-        // create a new InventoryItem with a specific value, serial number, and name
-        // expected = "the name"
+        // create an expected string
+        String expected = "name";
+        // create actual inventory item
+        InventoryItem actual = new InventoryItem("600", "XXXXXXXXXX", "name");
         // assert equals
+        assertEquals(expected, actual.getName());
     }
 
     @Test
     void setName() {
-        // expected = "the name"
-        // create new InventoryItem with no value, serial number, or name
-        // use setName to set the name to what is expected
+        // create an expected string
+        String expected = "name";
+        // create an actual inventory item with blank variables
+        InventoryItem actual = new InventoryItem("", "", "");
+        // call setValue
+        actual.setName("name");
         // assert equals
+        assertEquals(expected, actual.getName());
     }
 }

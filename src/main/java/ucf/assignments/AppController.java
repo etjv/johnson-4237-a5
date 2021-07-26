@@ -31,6 +31,7 @@ public class AppController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // initialize all of the columns to be text boxes to allow for editing
         if(itemValueColumn != null){
             itemValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         }
@@ -70,30 +71,38 @@ public class AppController implements Initializable {
 
     @FXML
     public void saveAsButtonClicked(ActionEvent actionEvent) {
+        // create a new file chooser
         FileChooser saveFileChooser = new FileChooser();
         saveFileChooser.setTitle("Save File");
         try {
+            // open a new stage with the file chooser
             Stage chooser = new Stage();
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FileChooser.fxml")));
             Scene scene = new Scene(root);
 
             File file = saveFileChooser.showSaveDialog(chooser);
-
+            // create the print writer
             PrintWriter output = new PrintWriter(file);
 
+            // if txt file
             if(file.getName().endsWith(".txt")){
+                // output in a properly formatted tsv file
                 output.print("Value");
+                // properly space the value and serial number column with tabs
                 for(int i = 0; i < myList.InventoryList.get(biggestValueFinder()).getValue().length()/4; i++){
                     output.print("\t");
                 }
                 output.println("Serial Number\tName");
+                // print out all of the items in the list
                 for(int i = 0; i < myList.InventoryList.size(); i++){
                     output.println(myList.InventoryList.get(i).getValue() + "\t" + myList.InventoryList.get(i).getSerialNumber() + "\t\t" + myList.InventoryList.get(i).getName());
                 }
                 output.close();
             }
-
+            // if html file
             else if(file.getName().endsWith(".html")){
+                // output in a properly formatted html file
+                // creating the table
                 output.print("<!DOCTYPE html>\n<html>\n<body><style>\nth {\n" +
                         "  text-align: left;\n" +
                         "}\n" +
@@ -105,6 +114,7 @@ public class AppController implements Initializable {
                         "    <th>Name</th>\n" +
                         "  </tr>\n" +
                         "  <tr>");
+                // put all of the items in the table
                 for(int i = 0; i < myList.InventoryList.size(); i++){
                     output.println("<tr>\n" +
                             "    <td>" + myList.InventoryList.get(i).getValue() +  "</td>\n" +
@@ -112,6 +122,7 @@ public class AppController implements Initializable {
                             "    <td>" + myList.InventoryList.get(i).getName() +  "</td>\n" +
                             "  </tr>\n</table>\n</body>\n</html>");
                 }
+                // close the file
                 output.close();
             }
         } catch (IOException e) {
@@ -131,10 +142,13 @@ public class AppController implements Initializable {
 
     @FXML
     public void changeItemValue(TableColumn.CellEditEvent cellEditEvent) {
+        // get the item text box that is selected
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
+        // check to see if the newly inputted value is a valid input
         if(!isValueANumber(cellEditEvent.getNewValue().toString())){
             errorPopUp();
         }
+        // if so, change the list
         else{
             int i = myTable.getSelectionModel().getSelectedIndex();
             myList.InventoryList.get(i).setValue(cellEditEvent.getNewValue().toString());
@@ -144,10 +158,13 @@ public class AppController implements Initializable {
 
     @FXML
     public void changeItemSerialNumber(TableColumn.CellEditEvent cellEditEvent) {
+        // get the item text box that is selected
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
+        // check to see if the newly inputted serial number is a valid input
         if(!isSerialNumberValid(cellEditEvent.getNewValue().toString().toUpperCase())){
             errorPopUp();
         }
+        // if so, change the list
         else{
             int i = myTable.getSelectionModel().getSelectedIndex();
             myList.InventoryList.get(i).setSerialNumber(cellEditEvent.getNewValue().toString().toUpperCase());
@@ -157,10 +174,13 @@ public class AppController implements Initializable {
 
     @FXML
     public void changeItemName(TableColumn.CellEditEvent cellEditEvent) {
+        // get the item text box that is selected
         InventoryItem selected = myTable.getSelectionModel().getSelectedItem();
+        // check to see if the newly inputted name is a valid input
         if(!isNameValid(cellEditEvent.getNewValue().toString())){
             errorPopUp();
         }
+        // if so, change the list
         else{
             int i = myTable.getSelectionModel().getSelectedIndex();
             myList.InventoryList.get(i).setName(cellEditEvent.getNewValue().toString());
@@ -267,22 +287,6 @@ public class AppController implements Initializable {
         return (name.length() >= 2) && (name.length() <= 256);
     }
 
-    public void saveInventoryList() {
-        // get the file extension of the file they want to save it to
-        // if(an html file) createHTMLFile(String filename)
-        // if(a tsv file) createTSVFile(String filename)
-    }
-
-    public void createTSVFile(String fileName){
-        // open a file with the filename.txt in the location chosen by the user.
-        // for(InventoryList.size) output the value, serial number and name separated by tabs
-        // close the file
-    }
-
-    public void createHTMLFile(String fileName){
-        // figure out how to do html files lol
-    }
-
     public void openInventoryList(){
         // while(!EOF)
         // scan in things to temp variables (depending on if the file is TSV/HTML)
@@ -309,10 +313,12 @@ public class AppController implements Initializable {
 
     public void errorPopUp() {
         try {
+            // create new stage
             Stage error = new Stage();
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ErrorMessage.fxml")));
             Scene scene = new Scene(root);
 
+            // show the error message
             error.setScene(scene);
             error.setTitle("App");
             error.show();
@@ -323,6 +329,7 @@ public class AppController implements Initializable {
 
     public int biggestValueFinder(){
         int largest = 0;
+        // look through the list of items and find the one with the largest value
         for(int i = 0; i < myList.InventoryList.size(); i++){
             if(myList.InventoryList.get(i).getValue().length() > myList.InventoryList.get(largest).getValue().length()){
                 largest = i;

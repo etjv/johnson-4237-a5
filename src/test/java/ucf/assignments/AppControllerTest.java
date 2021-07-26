@@ -20,16 +20,6 @@ class AppControllerTest {
     }
 
     @Test
-    void createTSVFile() {
-        // figure out how to test this
-    }
-
-    @Test
-    void createHTMLFile() {
-        // figure out how to test this
-    }
-
-    @Test
     void openInventoryList() {
         // figure out how to test this
     }
@@ -44,6 +34,41 @@ class AppControllerTest {
         // use deleteInventoryItem to remove the item from the actual
         deleteInventoryItem();
         // assert the lists are equal
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void isValueANumber() {
+        AppController app = new AppController();
+        boolean actual = app.isValueANumber("600");
+        assertTrue(actual);
+
+    }
+
+    @Test
+    void isSerialNumberValid() {
+        AppController app = new AppController();
+        boolean actual = app.isSerialNumberValid("XXXXXXXXXX");
+        assertTrue(actual);
+    }
+
+    @Test
+    void isNameValid() {
+        AppController app = new AppController();
+        boolean actual = app.isNameValid("name");
+        assertTrue(actual);
+    }
+
+    @Test
+    void biggestValueFinder() {
+        AppController app = new AppController();
+        InventoryList list = new InventoryList();
+        list.InventoryList.add(new InventoryItem("6", "", ""));
+        list.InventoryList.add(new InventoryItem("60", "", ""));
+        list.InventoryList.add(new InventoryItem("600", "", ""));
+
+        int expected = 2;
+        int actual = app.biggestValueFinder();
         assertEquals(expected, actual);
     }
 }
